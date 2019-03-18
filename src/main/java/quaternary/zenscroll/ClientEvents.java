@@ -1,0 +1,61 @@
+package quaternary.zenscroll;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import quaternary.zenscroll.config.ZenScrollConfig;
+import quaternary.zenscroll.net.MessageScrollItem;
+import quaternary.zenscroll.net.PacketHandler;
+import quaternary.zenscroll.util.ScrollGroup;
+
+@Mod.EventBusSubscriber(value = Side.CLIENT, modid = ZenScroll.MODID)
+public class ClientEvents {
+	@SubscribeEvent
+	public static void mouseInput(MouseEvent e) {
+		if(!ZenScrollConfig.ENABLED) return;
+			
+		Minecraft mc = Minecraft.getMinecraft();
+		EntityPlayer player = mc.player;
+		if(e.getDwheel() != 0 && isModifierPressed()) {
+			ItemStack sel = player.inventory.getCurrentItem/*Stack*/();
+			
+			for(ScrollGroup group : ZenScroll.scrollGroups) {
+				if(group.containsStack(sel)) {
+					PacketHandler.sendToServer(new MessageScrollItem(ZenScrollConfig.REVERSED ^ (e.getDwheel() <= 0)));
+					e.setCanceled(true);
+					return;
+				}
+			}
+		}
+	}
+	
+	public static boolean isModifierPressed() {
+		switch (ZenScrollConfig.KEY) {
+			case ALT: return GuiScreen.isAltKeyDown();
+			case CTRL: return GuiScreen.isCtrlKeyDown();
+			case SHIFT: return GuiScreen.isShiftKeyDown();
+			case NONE: return true;
+		}
+		
+		return false; //Impossible
+	}
+	
+	@SubscribeEvent
+	public static void tootip(ItemTooltipEvent e) {
+		if(!ZenScrollConfig.TOOLTIP || !ZenScrollConfig.ENABLED || e.getEntityPlayer() == null || e.getEntityPlayer().world == null) return;
+		
+		for(ScrollGroup group : ZenScroll.scrollGroups) {
+			if(group.containsStack(e.getItemStack())) {
+				e.getToolTip().add(TextFormatting.LIGHT_PURPLE + I18n.format("zenscroll.tooltip." + ZenScrollConfig.KEY.getName()));
+			}
+		}
+	}
+}

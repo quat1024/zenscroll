@@ -1,0 +1,16 @@
+[
+{
+  "modid": "zenscroll",
+  "name": "ZenScroll",
+  "description": "Scroll items into other items. Configurable from Zenscript.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["quaternary"],
+  "credits": "asdsdsdsd",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
