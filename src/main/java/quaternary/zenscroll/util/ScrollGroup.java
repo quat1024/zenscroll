@@ -16,9 +16,17 @@ public class ScrollGroup extends ArrayList<IItemStack> {
 		return indexOfStack(stack) != -1;
 	}
 	
+	public boolean containsStack(IItemStack istack) {
+		return indexOfStack(istack) != -1;
+	}
+	
 	public int indexOfStack(ItemStack stack) {
+		return indexOfStack(CraftTweakerMC.getIItemStack(stack));
+	}
+	
+	public int indexOfStack(IItemStack istack) {
 		for(int i = 0; i < size(); i++) {
-			if(get(i).matches(CraftTweakerMC.getIItemStack(stack))) return i;
+			if(get(i).matches(istack)) return i;
 		}
 		
 		return -1;

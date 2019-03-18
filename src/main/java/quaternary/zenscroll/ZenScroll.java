@@ -1,7 +1,9 @@
 package quaternary.zenscroll;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.creativetab.CreativeTabs;
@@ -57,32 +59,51 @@ public class ZenScroll {
 		public static final List<IAction> ACTIONS = new ArrayList<>();
 		
 		@ZenMethod
-		public static void add(IItemStack... stacks) {
-			//Flatten the list
-			List<IItemStack> stacksList = Arrays.stream(stacks)
-				.flatMap(i -> i.getItems().stream())
-				.map(i -> i.withAmount(1))
-				.flatMap(i -> {
-					if(i.getMetadata() == OreDictionary.WILDCARD_VALUE) {
-						//Expand wildcard items to whatever shows up in the search tab
-						NonNullList<ItemStack> oof = NonNullList.create();
-						CraftTweakerMC.getItemStack(i).getItem().getSubItems(CreativeTabs.SEARCH, oof);
-						return oof.stream().map(CraftTweakerMC::getIItemStack);
-					} else {
-						return Stream.of(i);
-					}
-				})
-				.collect(Collectors.toList());
-			
+		public static void add(IIngredient... ingredients) {
 			ACTIONS.add(new IAction() {
+				private String niceJoinedString;
+				
 				@Override
 				public void apply() {
+					if(ingredients == null) {
+						CraftTweakerAPI.logWarning("[ZenScroll] add() called with null ingredients list!");
+						return;
+					}
+					
+					//Flatten the list
+					List<IItemStack> stacksList = Arrays.stream(ingredients)
+						.flatMap(i -> i.getItems().stream())
+						.flatMap(i -> {
+							if(i.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+								//Expand wildcard items to whatever shows up in the search tab
+								NonNullList<ItemStack> oof = NonNullList.create();
+								CraftTweakerMC.getItemStack(i).getItem().getSubItems(CreativeTabs.SEARCH, oof);
+								return oof.stream().map(CraftTweakerMC::getIItemStack);
+							} else {
+								return Stream.of(i);
+							}
+						})
+						.map(i -> i.withAmount(1))
+						.filter(i -> !i.isEmpty())
+						.collect(Collectors.toList());
+					
+					niceJoinedString = stacksList.stream().map(IIngredient::toCommandString).collect(Collectors.joining(" ,"));
+					
+					for(IItemStack istack : stacksList) {
+						for(ScrollGroup group : scrollGroups) {
+							if(group.containsStack(istack)) {
+								CraftTweakerAPI.logWarning("[ZenScroll] Skipping group '" + niceJoinedString + "', since " + istack.toCommandString() + " is already in a scroll group.");
+								return;
+							}
+						}
+					}
+					
 					scrollGroups.add(new ScrollGroup(stacksList));
 				}
 				
 				@Override
 				public String describe() {
-					return "Adding scroll group with items :" + stacksList.stream().map(i -> CraftTweakerMC.getItemStack(i).toString()).collect(Collectors.joining(", "));
+					return "[ZenScroll] Adding scroll group with items :" + niceJoinedString;
 				}
 			});
 		}
@@ -97,24 +118,35 @@ public class ZenScroll {
 				
 				@Override
 				public String describe() {
-					return "Removing all scroll groups";
+					return "[ZenScroll] Removing all scroll groups";
 				}
 			});
 		}
 		
 		@ZenMethod
-		public static void remove(IItemStack stack) {
-			ItemStack stack2 = CraftTweakerMC.getItemStack(stack);
-			
+		public static void remove(IIngredient ingredient) {
 			ACTIONS.add(new IAction() {
+				private String logString;
+				
 				@Override
 				public void apply() {
-					scrollGroups.removeIf(group -> group.containsStack(stack2));
+					if(ingredient == null) {
+						CraftTweakerAPI.logWarning("[ZenScroll] remove() called with null ingredient!");
+						return;
+					}
+					
+					List<IItemStack> stacks = Stream.of(ingredient).flatMap(i -> i.getItems().stream()).collect(Collectors.toList());
+					
+					logString = stacks.stream()
+						.map(IIngredient::toCommandString)
+						.collect(Collectors.joining(", "));
+					
+					stacks.forEach(stack -> scrollGroups.removeIf(group -> group.containsStack(stack)));
 				}
 				
 				@Override
 				public String describe() {
-					return "Removing all scroll groups that contain itemstack " + stack2.toString();
+					return "[ZenScroll] Removing all groups that contain " + logString;
 				}
 			});
 		}
