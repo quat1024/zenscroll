@@ -17,12 +17,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import quaternary.zenscroll.config.ZenScrollConfig;
 import quaternary.zenscroll.net.PacketHandler;
+import quaternary.zenscroll.util.Etc;
 import quaternary.zenscroll.util.ScrollGroup;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,18 +61,17 @@ public class ZenScroll {
 		@ZenMethod
 		public static void add(IIngredient... ingredients) {
 			ACTIONS.add(new IAction() {
-				private String niceJoinedString;
+				private String stacksString;
 				
 				@Override
 				public void apply() {
 					if(ingredients == null) {
-						CraftTweakerAPI.logWarning("[ZenScroll] add() called with null ingredients list!");
+						CraftTweakerAPI.logWarning("[ZenScroll] add() called with null ingredients!");
 						return;
 					}
 					
 					//Flatten the list
-					List<IItemStack> stacksList = Arrays.stream(ingredients)
-						.flatMap(i -> i.getItems().stream())
+					List<IItemStack> stacks = Etc.flattenIIngredients(ingredients).stream()
 						.flatMap(i -> {
 							if(i.getMetadata() == OreDictionary.WILDCARD_VALUE) {
 								//Expand wildcard items to whatever shows up in the search tab
@@ -87,23 +86,23 @@ public class ZenScroll {
 						.filter(i -> !i.isEmpty())
 						.collect(Collectors.toList());
 					
-					niceJoinedString = stacksList.stream().map(IIngredient::toCommandString).collect(Collectors.joining(" ,"));
+					stacksString = Etc.ingredientListToString(stacks);
 					
-					for(IItemStack istack : stacksList) {
+					for(IItemStack istack : stacks) {
 						for(ScrollGroup group : scrollGroups) {
 							if(group.containsStack(istack)) {
-								CraftTweakerAPI.logWarning("[ZenScroll] Skipping group '" + niceJoinedString + "', since " + istack.toCommandString() + " is already in a scroll group.");
+								CraftTweakerAPI.logWarning("[ZenScroll] Skipping group '" + stacksString + "', since " + istack.toCommandString() + " is already in a scroll group.");
 								return;
 							}
 						}
 					}
 					
-					scrollGroups.add(new ScrollGroup(stacksList));
+					scrollGroups.add(new ScrollGroup(stacks));
 				}
 				
 				@Override
 				public String describe() {
-					return "[ZenScroll] Adding scroll group with items :" + niceJoinedString;
+					return "[ZenScroll] Adding scroll group with items :" + stacksString;
 				}
 			});
 		}
@@ -124,29 +123,53 @@ public class ZenScroll {
 		}
 		
 		@ZenMethod
-		public static void remove(IIngredient ingredient) {
+		public static void removeGroupsContaining(IIngredient... ingredients) {
 			ACTIONS.add(new IAction() {
 				private String logString;
 				
 				@Override
 				public void apply() {
-					if(ingredient == null) {
-						CraftTweakerAPI.logWarning("[ZenScroll] remove() called with null ingredient!");
+					if(ingredients == null) {
+						CraftTweakerAPI.logWarning("[ZenScroll] removeContaining() called with null ingredients!");
 						return;
 					}
 					
-					List<IItemStack> stacks = Stream.of(ingredient).flatMap(i -> i.getItems().stream()).collect(Collectors.toList());
-					
-					logString = stacks.stream()
-						.map(IIngredient::toCommandString)
-						.collect(Collectors.joining(", "));
-					
+					List<IItemStack> stacks = Etc.flattenIIngredients(ingredients);
 					stacks.forEach(stack -> scrollGroups.removeIf(group -> group.containsStack(stack)));
+					logString = "[ZenScroll] Removing any groups that contain " + Etc.ingredientListToString(stacks);
 				}
 				
 				@Override
 				public String describe() {
-					return "[ZenScroll] Removing all groups that contain " + logString;
+					return logString;
+				}
+			});
+		}
+		
+		@ZenMethod
+		public static void remove(IIngredient... ingredients) {
+			ACTIONS.add(new IAction() {
+				private String logString;
+				
+				@Override
+				public void apply() {
+					if(ingredients == null) {
+						CraftTweakerAPI.logWarning("[ZenScroll] removeFromGroups() called with null ingredients!");
+						return;
+					}
+					
+					List<IItemStack> stacks = Etc.flattenIIngredients(ingredients);
+					
+					for(IItemStack stack : stacks) {
+						scrollGroups.forEach(group -> group.removeIf(gstack -> gstack.matches(stack)));
+					}
+					
+					logString = "[ZenScroll] Removing '" + Etc.ingredientListToString(stacks) + "' from any groups it's in";
+				}
+				
+				@Override
+				public String describe() {
+					return logString;
 				}
 			});
 		}
