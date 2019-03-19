@@ -21,11 +21,11 @@ import quaternary.zenscroll.util.ScrollGroup;
 public class ClientEvents {
 	@SubscribeEvent
 	public static void mouseInput(MouseEvent e) {
-		if(!ZenScrollConfig.ENABLED) return;
-			
+		if(ClientProxy.SCROLL_MOD.getKeyCode() == 0) return; //unbound
+		
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer player = mc.player;
-		if(e.getDwheel() != 0 && ClientProxy.SCROLL_MOD.isKeyDown()) {
+		if(player != null && player.world != null && e.getDwheel() != 0 && ClientProxy.SCROLL_MOD.isKeyDown()) {
 			ItemStack sel = player.inventory.getCurrentItem/*Stack*/();
 			
 			for(ScrollGroup group : ZenScroll.scrollGroups) {
@@ -40,7 +40,7 @@ public class ClientEvents {
 	
 	@SubscribeEvent
 	public static void tootip(ItemTooltipEvent e) {
-		if(!ZenScrollConfig.TOOLTIP || !ZenScrollConfig.ENABLED || e.getEntityPlayer() == null || e.getEntityPlayer().world == null) return;
+		if(!ZenScrollConfig.TOOLTIP || ClientProxy.SCROLL_MOD.getKeyCode() == 0 || e.getEntityPlayer() == null || e.getEntityPlayer().world == null) return;
 		
 		for(ScrollGroup group : ZenScroll.scrollGroups) {
 			if(group.containsStack(e.getItemStack())) {

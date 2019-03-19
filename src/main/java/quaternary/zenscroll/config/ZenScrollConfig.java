@@ -12,7 +12,6 @@ public class ZenScrollConfig {
 	public static Configuration config;
 	public static int CONFIG_VERSION = 2;
 	
-	public static boolean ENABLED;
 	public static boolean REVERSED;
 	public static boolean TOOLTIP;
 	
@@ -23,6 +22,7 @@ public class ZenScrollConfig {
 		int currentConfigVersion = Integer.parseInt(config.getLoadedConfigVersion());
 		if(currentConfigVersion == 1) {
 			config.getCategory("client").remove("modifierKey");
+			config.getCategory("client").remove("enabled");
 		}
 		
 		readConfig();
@@ -30,8 +30,6 @@ public class ZenScrollConfig {
 	
 	public static void readConfig() {
 		REVERSED = config.getBoolean("reversed", "client", false, "Should the scroll direction be reversed?");
-		
-		ENABLED = config.getBoolean("enabled", "client", true, "Should scrolling behavior be enabled for your client?");
 		
 		TOOLTIP = config.getBoolean("tooltip", "client", true, "Should a small tooltip be added on items that can be scrolled?");
 		
