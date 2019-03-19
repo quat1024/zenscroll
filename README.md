@@ -13,10 +13,10 @@ Mozilla Public License 2.0, or any later version. Here: https://www.mozilla.org/
 
 Check the config file. There are options to:
 
-- change the modifier key you need to press to enable scroll-cycling
 - reverse scroll direction
 - enable or disable a little tooltip that appears on items you can scroll-cycle
-- disable the effect entirely for your client
+
+Also check your keybindings screen. The scrolling modifier defaults to left Alt.
 
 ## Modpack authors:
 
