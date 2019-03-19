@@ -130,7 +130,7 @@ public class ZenScroll {
 				@Override
 				public void apply() {
 					if(ingredients == null) {
-						CraftTweakerAPI.logWarning("[ZenScroll] removeContaining() called with null ingredients!");
+						CraftTweakerAPI.logWarning("[ZenScroll] removeGroupsContaining() called with null ingredients!");
 						return;
 					}
 					
@@ -154,7 +154,7 @@ public class ZenScroll {
 				@Override
 				public void apply() {
 					if(ingredients == null) {
-						CraftTweakerAPI.logWarning("[ZenScroll] removeFromGroups() called with null ingredients!");
+						CraftTweakerAPI.logWarning("[ZenScroll] remove() called with null ingredients!");
 						return;
 					}
 					
