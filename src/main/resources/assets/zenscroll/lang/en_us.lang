@@ -2,7 +2,6 @@ zenscroll.config.modifierKey=Modifier Key
 zenscroll.config.reversed=Reversed
 zenscroll.config.enabled=Enabled
 
-zenscroll.tooltip.shift=Shift-scroll to cycle
-zenscroll.tooltip.ctrl=Ctrl-scroll to cycle
-zenscroll.tooltip.alt=Alt-scroll to cycle
-zenscroll.tooltip.none=Scroll to cycle
+zenscroll.tooltip=%s-scroll to cycle
+
+zenscroll.options.modifier_key=Scroll Modifier Key

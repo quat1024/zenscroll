@@ -14,6 +14,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import quaternary.zenscroll.config.ZenScrollConfig;
 import quaternary.zenscroll.net.MessageScrollItem;
 import quaternary.zenscroll.net.PacketHandler;
+import quaternary.zenscroll.proxy.ClientProxy;
 import quaternary.zenscroll.util.ScrollGroup;
 
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = ZenScroll.MODID)
@@ -24,7 +25,7 @@ public class ClientEvents {
 			
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer player = mc.player;
-		if(e.getDwheel() != 0 && isModifierPressed()) {
+		if(e.getDwheel() != 0 && ClientProxy.SCROLL_MOD.isKeyDown()) {
 			ItemStack sel = player.inventory.getCurrentItem/*Stack*/();
 			
 			for(ScrollGroup group : ZenScroll.scrollGroups) {
@@ -37,24 +38,13 @@ public class ClientEvents {
 		}
 	}
 	
-	public static boolean isModifierPressed() {
-		switch (ZenScrollConfig.KEY) {
-			case ALT: return GuiScreen.isAltKeyDown();
-			case CTRL: return GuiScreen.isCtrlKeyDown();
-			case SHIFT: return GuiScreen.isShiftKeyDown();
-			case NONE: return true;
-		}
-		
-		return false; //Impossible
-	}
-	
 	@SubscribeEvent
 	public static void tootip(ItemTooltipEvent e) {
 		if(!ZenScrollConfig.TOOLTIP || !ZenScrollConfig.ENABLED || e.getEntityPlayer() == null || e.getEntityPlayer().world == null) return;
 		
 		for(ScrollGroup group : ZenScroll.scrollGroups) {
 			if(group.containsStack(e.getItemStack())) {
-				e.getToolTip().add(TextFormatting.LIGHT_PURPLE + I18n.format("zenscroll.tooltip." + ZenScrollConfig.KEY.getName()));
+				e.getToolTip().add(TextFormatting.LIGHT_PURPLE + I18n.format("zenscroll.tooltip", ClientProxy.SCROLL_MOD.getDisplayName()));
 			}
 		}
 	}
