@@ -1,7 +1,6 @@
 package quaternary.zenscroll;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,7 +14,6 @@ import quaternary.zenscroll.config.ZenScrollConfig;
 import quaternary.zenscroll.net.MessageScrollItem;
 import quaternary.zenscroll.net.PacketHandler;
 import quaternary.zenscroll.proxy.ClientProxy;
-import quaternary.zenscroll.util.ScrollGroup;
 
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = ZenScroll.MODID)
 public class ClientEvents {

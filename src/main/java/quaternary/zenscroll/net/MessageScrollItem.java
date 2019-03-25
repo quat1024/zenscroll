@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.simpleimpl.*;
-import quaternary.zenscroll.util.ScrollGroup;
+import quaternary.zenscroll.ScrollGroup;
 import quaternary.zenscroll.ZenScroll;
 
 public class MessageScrollItem implements PacketHandler.IZenScrollMessage {
