@@ -5,3 +5,6 @@ zenscroll.config.enabled=Enabled
 zenscroll.tooltip=%s-scroll to cycle
 
 zenscroll.options.modifier_key=Scroll Modifier Key
+
+zenscroll.jei.notBound=No ZenScroll modifier key bound
+zenscroll.jei.scroll.title=Scrolling

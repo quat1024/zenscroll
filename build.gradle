@@ -15,20 +15,20 @@ group = "quaternary.zenscroll" // http://maven.apache.org/guides/mini/guide-nami
 archivesBaseName = "zenscroll"
 
 repositories {
-	mavenCentral()
 	maven {
 		url "http://maven.blamejared.com"
 	}
-}
-
-configurations {
-	jarinjar {
-		transitive = false
+	
+	maven {
+		url "http://dvs1.progwml6.com/files/maven"
 	}
 }
 
 dependencies {
 	deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.15.527"
+
+	deobfProvided "mezz.jei:jei_1.12.2:4.15.0.268:api"
+	runtime "mezz.jei:jei_1.12.2:4.15.0.268"
 }
 
 minecraft {
