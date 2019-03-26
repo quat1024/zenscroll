@@ -74,6 +74,10 @@ Removes these items from all registered scroll groups.
 
 Unregisters all scroll groups containing these items.
 
+#### `void ZenScroll.beQuietIKnowWhatImDoing()`
+
+Disables logs and info warnings.
+
 ### class `mods.zenscroll.ScrollGroup`
 
 This class represents a scroll group. It's a single list of items that can be cycled by users when they hold the modifier key and scroll the mouse wheel. Call `ZenScroll.add` to register this group in-game.
@@ -102,25 +106,57 @@ Since item stacks are also `IIngredients`, you can just call this on a list of i
 
 Sets the "processor function" of this scroll group. The processor function is called every time the player scrolls once. The processor function takes two IItemStack arguments - the first argument is the IItemStack the player is scrolling *from*, and the second is the IItemStack the player is scrolling *to*. It returns a third itemstack, which will be the one actually set into the player's hand.
 
-You might need to cast this to `mods.zenscroll.ScrollProcessor`.
+The default processor simply ignores the previous item, and always returns the next one, like this:
 
+    function(prev as IItemStack, next as IItemStack) {
+      return next;
+    }
+
+You can use this function to transform the scrolled item in various interesting ways.
+
+For example, this looks like a group between all stained glass items, but when you scroll it actually turns into an apple:
+
+    var glassGroup = ScrollGroup.of(<minecraft:stained_glass:*>);
+    
+    glassGroup.processor(
+      function(prev as IItemStack, next as IItemStack) {
+        return <minecraft:apple>;
+      }
+    );
+
+Of course this example is quite silly; you'd probably want to return some variant of `next`.
+
+This method returns the same scrollgroup you called it on, so you can use also just use it like this:
+
+    var glassGroup = ScrollGroup.of(<minecraft:stained_glass:*>).processor(
+      function(prev as IItemStack, next as IItemStack) {
+        return <minecraft:apple>;
+      }
+    );
+
+Or even like this:
+
+    ZenScroll.add(<minecraft:stained_glass:*>).processor(...);
+    
 Note that my JEI handler does not take into account the processor function, so anything *really* wacky you do with this function will probably not appear correctly in JEI.
 
-You can use this to transform the scrolled item in various interesting ways.
-
-For example:
-
-    (lol add something)
-
-This method returns the same scrollgroup you called it on, so you can use it like this:
-
-    var coolGroup = ScrollGroup.of(...).processor(...);
+The functional interface you're implementing with this, btw, is `mods.zenscroll.ScrollProcessor`. If you want to save and reuse these processor functions in variables might want to import that.
     
 #### `ScrollGroup ScrollGroup#copyTag`
 
-Sets the processor function to one that copies the tag on the previous stack to the next one. This is just shorthand and isn't anything you couldn't do with the existing processor function.
+Sets the processor function to this:
 
-This is a good idea to add on things where NBT data is important, for example if you want to retain enchantments on something or retain the contents of some sort of bag or container.
+    function(prev as IItemStack, next as IItemStack) {
+      if(prev.hasTag) {
+        return next.withTag(prev.tag, false);
+      } else {
+        return next.withEmptyTag();
+      }
+    }
+
+This processor function just copies the tag from the previous item onto the next item, i.e. when you scroll, all NBT data is preserved.
+
+This function is just shorthand, it's exactly the same as manually setting the processor function to this. It's just a very common use case of processor functions.
 
 #### `boolean ScrollGroup#contains(IItemStack stack)`
 
@@ -130,4 +166,18 @@ Returns whether this scroll group has this stack in it.
 
 Returns the index of this stack in the scroll group. 0 is the first item, 1 is the second, and so on.
 
-TODO add more methods to this api and document them here.
+#### `IItemStack[] ScrollGroup#items`
+
+(to clarify, this means `myAwesomeScrollGroup.items`)
+
+The items in this scroll group. You can change this array or whatever.
+
+#### `ScrollGroup ScrollGroup#creativeOnly(boolean isCreativeOnly)`
+
+Sets this scroll group as creative only. Creative only groups will not show a tooltip or respond to scrolls in non-creative game modes, and do not show in JEI. Also returns itself so you can chain function calls.
+
+The boolean parameter is optional and defaults to `true`.
+
+#### `boolean ScrollGroup#isCreativeOnly()`
+
+Guess what this does.

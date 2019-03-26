@@ -37,7 +37,7 @@ public class MessageScrollItem implements PacketHandler.IZenScrollMessage {
 				ItemStack stack = inv.getCurrentItem/*Stack*/();
 				
 				for(ScrollGroup group : ZenScroll.scrollGroups) {
-					if(group.containsStack(stack)) {
+					if(group.checkPermission(player) && group.containsStack(stack)) {
 						ItemStack replace = msg.scrollUp ? group.next(stack) : group.prev(stack);
 						replace.setCount(stack.getCount()); //It's a copy, this is safe
 						

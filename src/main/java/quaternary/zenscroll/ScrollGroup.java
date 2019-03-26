@@ -6,19 +6,22 @@ import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
 import quaternary.zenscroll.util.Etc;
 import quaternary.zenscroll.util.ScrollProcessor;
+import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenConstructor;
+import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenProperty;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,9 +53,12 @@ public class ScrollGroup implements Iterable<IItemStack> {
 		return new ScrollGroup(ingredients);
 	}
 	
-	public final List<IItemStack> items;
+	@ZenProperty
+	public List<IItemStack> items;
 	
 	public ScrollProcessor processor = (prev, next) -> next;
+	
+	public boolean creativeOnly = false;
 	
 	@ZenMethod("processor")
 	@ZenDoc("Set the processor function. This function is called every time the player scrolls once, and it takes two arguments: the previous itemstack, and the next stack. By default, the processor function simply returns the next stack as-is, but it can be used for copying NBT data and the like.")
@@ -73,6 +79,17 @@ public class ScrollGroup implements Iterable<IItemStack> {
 		};
 		
 		return this;
+	}
+	
+	@ZenMethod
+	public ScrollGroup creativeOnly(@Optional(valueBoolean = true) boolean v) {
+		creativeOnly = v;
+		return this;
+	}
+	
+	@ZenMethod
+	public boolean isCreativeOnly() {
+		return creativeOnly;
 	}
 	
 	public boolean containsStack(ItemStack stack) {
@@ -134,5 +151,10 @@ public class ScrollGroup implements Iterable<IItemStack> {
 	@Override
 	public String toString() {
 		return Etc.ingredientListToString(items);
+	}
+	
+	public boolean checkPermission(EntityPlayer player) {
+		if(creativeOnly) return player.isCreative();
+		else return true;
 	}
 }

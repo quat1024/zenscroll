@@ -17,6 +17,13 @@ import java.util.List;
 @ZenRegister
 //The zs doesn't stand for zenscroll it stands for zenscript.
 public class ZSHandler {
+	public static boolean ENABLE_LOGGING = true;
+	
+	@ZenMethod
+	public static void beQuietIKnowWhatImDoing() {
+		ENABLE_LOGGING = false;
+	}
+	
 	@ZenMethod
 	@ZenDoc("Registers a scroll group consisting of the specified ingredients. Shorthand for 'ZenScroll.add(ScrollGroup.of(...))'.")
 	public static ScrollGroup add(IIngredient... ingredients) {
@@ -110,11 +117,11 @@ public class ZSHandler {
 	}
 	
 	private static void info(String message, Object... fmt) {
-		CraftTweakerAPI.logInfo(logFmt(message, fmt));
+		if(ENABLE_LOGGING)	CraftTweakerAPI.logInfo(logFmt(message, fmt));
 	}
 	
 	private static void warn(String message, Object... fmt) {
-		CraftTweakerAPI.logWarning(logFmt(message, fmt));
+		if(ENABLE_LOGGING) CraftTweakerAPI.logWarning(logFmt(message, fmt));
 	}
 	
 	private static String logFmt(String message, Object... fmt) {

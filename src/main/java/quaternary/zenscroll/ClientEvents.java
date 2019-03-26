@@ -27,7 +27,7 @@ public class ClientEvents {
 			ItemStack sel = player.inventory.getCurrentItem/*Stack*/();
 			
 			for(ScrollGroup group : ZenScroll.scrollGroups) {
-				if(group.containsStack(sel)) {
+				if(group.checkPermission(player) && group.containsStack(sel)) {
 					PacketHandler.sendToServer(new MessageScrollItem(ZenScrollConfig.REVERSED ^ (e.getDwheel() <= 0)));
 					e.setCanceled(true);
 					return;
@@ -38,10 +38,13 @@ public class ClientEvents {
 	
 	@SubscribeEvent
 	public static void tootip(ItemTooltipEvent e) {
-		if(!ZenScrollConfig.TOOLTIP || ClientProxy.SCROLL_MOD.getKeyCode() == 0 || e.getEntityPlayer() == null || e.getEntityPlayer().world == null) return;
+		if(!ZenScrollConfig.TOOLTIP || ClientProxy.SCROLL_MOD.getKeyCode() == 0) return;
+		
+		EntityPlayer player = e.getEntityPlayer();
+		if(player == null || player.world == null) return;
 		
 		for(ScrollGroup group : ZenScroll.scrollGroups) {
-			if(group.containsStack(e.getItemStack())) {
+			if(group.checkPermission(player) && group.containsStack(e.getItemStack())) {
 				e.getToolTip().add(TextFormatting.LIGHT_PURPLE + I18n.format("zenscroll.tooltip", ClientProxy.SCROLL_MOD.getDisplayName()));
 			}
 		}
