@@ -22,6 +22,60 @@ Also check your keybindings screen. The scrolling modifier defaults to left Alt.
 
 You can configure this mod through CraftTweaker! Yeah!
 
+## Quick Start
+
+    import mods.zenscroll.ZenScroll;
+    import mods.zenscroll.ScrollGroup;
+    
+    //Adding a simple scroll group between 2 items.
+    ZenScroll.add(<minecraft:apple>, <minecraft:gravel>);
+    
+    //Adding a scroll group with some data - here, it's lore.
+    ZenScroll.add(<minecraft:grass>, <minecraft:stone>.withLore(["Smells like grass."]);
+    //You can scroll grass into stone with lore, and stone with lore into grass.
+    //But you can't scroll regular stone into grass.
+    //The tag has to match.
+    
+    //Adding a scroll group using wildcarded items.
+    ZenScroll.add(<minecraft:glass>, <minecraft:stained_glass:*>);
+    //Expands to a scroll group with 17 items - regular glass and all 16 stained glasses.
+    
+    //Adding a scroll group from an ore dictionary key.
+    //You can scroll all dyes into each other, and also into all sticks. Reverse is true as well.
+    ZenScroll.add(oreDict.get("dye"), oreDict.get("stickWood"));
+    
+    //Adding a scroll group using a mod.
+    ZenScroll.add(loadedMods["minecraft"].items);
+    //Now you can scroll literally everything from Minecraft into each other.
+    
+    //Adding a scroll group that preserves NBT.
+    ZenScroll.add(<minecraft:wool:*>).copyTag();
+    
+    //Adding a scroll group that preserves NBT and works only in creative.
+    ZenScroll.add(<minecraft:wool:*>).creativeOnly().copyTag();
+    
+    //Adding a scroll group that preserves NBT, "the hard way".
+    ZenScroll.add(<minecraft:wool:*>).processor(
+      if(prev.hasTag) {
+        return next.withTag(prev.tag, false);
+      } else {
+        return next.withEmptyTag();
+      }
+    );
+    //copyTag is an alias to that processor function.
+    
+    //Using a ScrollGroup object.
+    var coolGroup = ScrollGroup.of(<minecraft:stained_hardened_clay:*>, <minecraft:stick>);
+    
+    for item in coolGroup.items {
+      //Do something.
+    }
+    
+    ZenScroll.add(coolGroup);
+    //ZenScroll.add(IIngredient...) is an alias for ZenScroll.add(ScrollGroup.of(IIngredient...)).
+
+## Full docs
+
 ### Class `mods.zenscroll.ZenScroll`
 
 This class relates to registering scroll groups with the game.
