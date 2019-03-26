@@ -58,9 +58,13 @@ Examples:
 
 Adds a ScrollGroup object, the "long way". Returns the same object.
 
-#### `ScrollGroup findGroup(IIngredient ingredient)`
+#### `ScrollGroup ZenScroll.findGroup(IIngredient ingredient)`
 
 Returns the registered ScrollGroup that this item is in, or `null` if it's not in any registered groups.
+
+#### `ScrollGroup[] ZenScroll.all()`
+
+Returns all the registered scrollgroups.
 
 #### `void ZenScroll.removeAll()`
 

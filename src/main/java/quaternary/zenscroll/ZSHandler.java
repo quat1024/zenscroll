@@ -74,6 +74,11 @@ public class ZSHandler {
 	}
 	
 	@ZenMethod
+	public static List<ScrollGroup> all() {
+		return ZenScroll.scrollGroups;
+	}
+	
+	@ZenMethod
 	@ZenDoc("Clears all scroll groups, as if you had never registered any at all.")
 	public static void removeAll() {
 		info("Clearing all scroll groups");
