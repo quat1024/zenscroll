@@ -23,57 +23,57 @@ Also check your keybindings screen. The scrolling modifier defaults to left Alt.
 You can configure this mod through CraftTweaker! Yeah!
 
 ## Quick Start
+```zenscript
+import mods.zenscroll.ZenScroll;
+import mods.zenscroll.ScrollGroup;
 
-    import mods.zenscroll.ZenScroll;
-    import mods.zenscroll.ScrollGroup;
-    
-    //Adding a simple scroll group between 2 items.
-    ZenScroll.add(<minecraft:apple>, <minecraft:gravel>);
-    
-    //Adding a scroll group with some data - here, it's lore.
-    ZenScroll.add(<minecraft:grass>, <minecraft:stone>.withLore(["Smells like grass."]);
-    //You can scroll grass into stone with lore, and stone with lore into grass.
-    //But you can't scroll regular stone into grass.
-    //The tag has to match.
-    
-    //Adding a scroll group using wildcarded items.
-    ZenScroll.add(<minecraft:glass>, <minecraft:stained_glass:*>);
-    //Expands to a scroll group with 17 items - regular glass and all 16 stained glasses.
-    
-    //Adding a scroll group from an ore dictionary key.
-    //You can scroll all dyes into each other, and also into all sticks. Reverse is true as well.
-    ZenScroll.add(oreDict.get("dye"), oreDict.get("stickWood"));
-    
-    //Adding a scroll group using a mod.
-    ZenScroll.add(loadedMods["minecraft"].items);
-    //Now you can scroll literally everything from Minecraft into each other.
-    
-    //Adding a scroll group that preserves NBT.
-    ZenScroll.add(<minecraft:wool:*>).copyTag();
-    
-    //Adding a scroll group that preserves NBT and works only in creative.
-    ZenScroll.add(<minecraft:wool:*>).creativeOnly().copyTag();
-    
-    //Adding a scroll group that preserves NBT, "the hard way".
-    ZenScroll.add(<minecraft:wool:*>).processor(
-      if(prev.hasTag) {
-        return next.withTag(prev.tag, false);
-      } else {
-        return next.withEmptyTag();
-      }
-    );
-    //copyTag is an alias to that processor function.
-    
-    //Using a ScrollGroup object.
-    var coolGroup = ScrollGroup.of(<minecraft:stained_hardened_clay:*>, <minecraft:stick>);
-    
-    for item in coolGroup.items {
-      //Do something.
-    }
-    
-    ZenScroll.add(coolGroup);
-    //ZenScroll.add(IIngredient...) is an alias for ZenScroll.add(ScrollGroup.of(IIngredient...)).
+//Adding a simple scroll group between 2 items.
+ZenScroll.add(<minecraft:apple>, <minecraft:gravel>);
 
+//Adding a scroll group with some data - here, it's lore.
+ZenScroll.add(<minecraft:grass>, <minecraft:stone>.withLore(["Smells like grass."]);
+//You can scroll grass into stone with lore, and stone with lore into grass.
+//But you can't scroll regular stone into grass.
+//The tag has to match.
+
+//Adding a scroll group using wildcarded items.
+ZenScroll.add(<minecraft:glass>, <minecraft:stained_glass:*>);
+//Expands to a scroll group with 17 items - regular glass and all 16 stained glasses.
+
+//Adding a scroll group from an ore dictionary key.
+//You can scroll all dyes into each other, and also into all sticks. Reverse is true as well.
+ZenScroll.add(oreDict.get("dye"), oreDict.get("stickWood"));
+
+//Adding a scroll group using a mod.
+ZenScroll.add(loadedMods["minecraft"].items);
+//Now you can scroll literally everything from Minecraft into each other.
+
+//Adding a scroll group that preserves NBT.
+ZenScroll.add(<minecraft:wool:*>).copyTag();
+
+//Adding a scroll group that preserves NBT and works only in creative.
+ZenScroll.add(<minecraft:wool:*>).creativeOnly().copyTag();
+
+//Adding a scroll group that preserves NBT, "the hard way".
+ZenScroll.add(<minecraft:wool:*>).processor(
+  if(prev.hasTag) {
+    return next.withTag(prev.tag, false);
+  } else {
+    return next.withEmptyTag();
+  }
+);
+//copyTag is an alias to that processor function.
+
+//Using a ScrollGroup object.
+var coolGroup = ScrollGroup.of(<minecraft:stained_hardened_clay:*>, <minecraft:stick>);
+
+for item in coolGroup.items {
+  //Do something???
+}
+
+ZenScroll.add(coolGroup);
+//ZenScroll.add(IIngredient...) is an alias for ZenScroll.add(ScrollGroup.of(IIngredient...)).
+```
 ## Full docs
 
 ### Class `mods.zenscroll.ZenScroll`
@@ -92,21 +92,23 @@ This is shorthand for `ZenScroll.add(ScrollGroup.of(ingredients))`.
 
 Examples:
 
-    //Just a list of items.
-    ZenScroll.add(<minecraft:apple>, <minecraft:gravel>, <minecraft:dirt>);
-    
-    //Adding some data on items.
-    ZenScroll.add(<minecraft:apple>, <minecraft:sand>.withLore(["Very suspicious..."]));
-    //Players will be able to scroll apples into suspicions sand, and vice versa.
-    //However they will not be able to scroll regular sand into apples.
-    
-    //Using wildcards.
-    ZenScroll.add(<minecraft:wool:*>);
-    //Any wildcarded items will be expanded out into whatever shows up in the SEARCH creative tab.
-    
-    //Using an ore dictionary key.
-    ZenScroll.add(oreDict.get("dye"));
-    ZenScroll.add(oreDict.get("fenceWood"));
+```zenscript
+//Just a list of items.
+ZenScroll.add(<minecraft:apple>, <minecraft:gravel>, <minecraft:dirt>);
+
+//Adding some data on items.
+ZenScroll.add(<minecraft:apple>, <minecraft:sand>.withLore(["Very suspicious..."]));
+//Players will be able to scroll apples into suspicious sand, and vice versa.
+//However they will not be able to scroll regular sand into apples.
+
+//Using wildcards.
+ZenScroll.add(<minecraft:wool:*>);
+//Any wildcarded items will be expanded out into whatever shows up in the SEARCH creative tab.
+
+//Using an ore dictionary key.
+ZenScroll.add(oreDict.get("dye"));
+ZenScroll.add(oreDict.get("fenceWood"));
+```
 
 #### `ScrollGroup ZenScroll.add(ScrollGroup group)`
 
@@ -156,7 +158,7 @@ The constructor. The ingredient input is processed like so:
 
 This method takes varargs, so you can either call it as if it has a million arguments, or just pass in a single array of IIngredients.
 
-While this method is complicated internally, it's really just that way to be as flexible as possible. Just know that you can call this method on any IIngredient or array of IIngredients. A lot of things are IIngredients already, like item stacks (`<minecraft:apple>`), ore keys (`oreDict.get("dye")`), and idk probably more?
+While this method is complicated internally, it's really just that way to be as flexible as possible. Just know that you can call this method on any IIngredient or array of IIngredients. A lot of things are IIngredients already, like item stacks (`<minecraft:apple>`), ore keys (`oreDict.get("dye")`), and more!
 
 Since item stacks are also `IIngredients`, you can just call this on a list of item stacks just fine.
 
@@ -166,51 +168,61 @@ Sets the "processor function" of this scroll group. The processor function is ca
 
 The default processor simply ignores the previous item, and always returns the next one, like this:
 
-    function(prev as IItemStack, next as IItemStack) {
-      return next;
-    }
+```zenscript
+function(prev as IItemStack, next as IItemStack) {
+  return next;
+}
+```
 
 You can use this function to transform the scrolled item in various interesting ways.
 
 For example, this looks like a group between all stained glass items, but when you scroll it actually turns into an apple:
 
-    var glassGroup = ScrollGroup.of(<minecraft:stained_glass:*>);
-    
-    glassGroup.processor(
-      function(prev as IItemStack, next as IItemStack) {
-        return <minecraft:apple>;
-      }
-    );
+```zenscript
+var glassGroup = ScrollGroup.of(<minecraft:stained_glass:*>);
+
+glassGroup.processor(
+  function(prev as IItemStack, next as IItemStack) {
+    return <minecraft:apple>;
+  }
+);
+```
 
 Of course this example is quite silly; you'd probably want to return some variant of `next`.
 
-This method returns the same scrollgroup you called it on, so you can use also just use it like this:
+`processor` itself returns the same scrollgroup you called it on, so you can also chain calls like this:
 
-    var glassGroup = ScrollGroup.of(<minecraft:stained_glass:*>).processor(
-      function(prev as IItemStack, next as IItemStack) {
-        return <minecraft:apple>;
-      }
-    );
+```zenscript
+var glassGroup = ScrollGroup.of(<minecraft:stained_glass:*>).processor(
+  function(prev as IItemStack, next as IItemStack) {
+    return <minecraft:apple>;
+  }
+);
+```
 
 Or even like this:
 
-    ZenScroll.add(<minecraft:stained_glass:*>).processor(...);
+```zenscript
+ZenScroll.add(<minecraft:stained_glass:*>).processor(...);
+```
     
-Note that my JEI handler does not take into account the processor function, so anything *really* wacky you do with this function will probably not appear correctly in JEI.
+Note that my JEI handler does not take into account the processor function, so anything *really* off-the-wall you do with this function will not appear correctly in JEI.
 
-The functional interface you're implementing with this, btw, is `mods.zenscroll.ScrollProcessor`. If you want to save and reuse these processor functions in variables might want to import that.
+The functional interface you're implementing by writing processor functions, btw, is `mods.zenscroll.ScrollProcessor`. If you want to save and reuse these processor functions in variables might want to import that.
     
 #### `ScrollGroup ScrollGroup#copyTag`
 
 Sets the processor function to this:
 
-    function(prev as IItemStack, next as IItemStack) {
-      if(prev.hasTag) {
-        return next.withTag(prev.tag, false);
-      } else {
-        return next.withEmptyTag();
-      }
-    }
+```zenscript
+function(prev as IItemStack, next as IItemStack) {
+  if(prev.hasTag) {
+    return next.withTag(prev.tag, false);
+  } else {
+    return next.withEmptyTag();
+  }
+}
+```
 
 This processor function just copies the tag from the previous item onto the next item, i.e. when you scroll, all NBT data is preserved.
 
