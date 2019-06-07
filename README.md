@@ -46,12 +46,16 @@ ZenScroll.add(oreDict.get("dye"), oreDict.get("stickWood"));
 
 //Adding a scroll group using a mod.
 ZenScroll.add(loadedMods["minecraft"].items);
-//Now you can scroll literally everything from Minecraft into each other.
+//Now you can scroll literally every item from Minecraft into every other item from Minecraft.
 
-//Adding a scroll group that preserves NBT.
+//Adding a scroll group that works only in creative.
+ZenScroll.add(<minecraft:wool:*>).creativeOnly();
+
+//Adding a scroll group that preserves NBT, the "easy way".
 ZenScroll.add(<minecraft:wool:*>).copyTag();
 
-//Adding a scroll group that preserves NBT and works only in creative.
+//Why_cant_we_have_both.gif
+ZenScroll.add(<minecraft:wool:*>).copyTag().creativeOnly();
 ZenScroll.add(<minecraft:wool:*>).creativeOnly().copyTag();
 
 //Adding a scroll group that preserves NBT, "the hard way".
@@ -64,8 +68,10 @@ ZenScroll.add(<minecraft:wool:*>).processor(
 );
 //copyTag is an alias to that processor function.
 
-//Using a ScrollGroup object.
+//Using a standalone ScrollGroup object.
 var coolGroup = ScrollGroup.of(<minecraft:stained_hardened_clay:*>, <minecraft:stick>);
+coolGroup.copyTag();
+coolGroup.creativeOnly();
 
 for item in coolGroup.items {
   //Do something???
