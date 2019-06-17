@@ -82,9 +82,16 @@ ZenScroll.add(coolGroup);
 ```
 ## Full docs
 
+Throughout this document:
+
+* `SomeClass.someMethod` with a *dot* refers to a *static* method, that you call directly on the class, such as `ScrollGroup.of(...)`
+* `SomeClass#someOtherMethod` with a *pound sign* refers to an *instance* method, that you call on an *instance* of that class, like `myScrollGroup.creativeOnly();`
+
+Got it? Ok, let's get started.
+
 ### Class `mods.zenscroll.ZenScroll`
 
-This class relates to registering scroll groups with the game.
+This class relates to registering scroll groups to the game.
 
 #### `ScrollGroup ZenScroll.add(IIngredient... ingredients)`
 
@@ -325,3 +332,47 @@ The boolean parameter is optional and defaults to `true`.
 #### `boolean ScrollGroup#isCreativeOnly()`
 
 Guess what this does.
+
+### class `mods.zenscroll.ScrollProcessor`
+
+This is the functional interface used for processor functions.
+
+#### `IItemStack ScrollProcessor#apply(IItemStack prev, IItemStack next)`
+
+Run the scroll processor.
+
+---
+
+This interface has a few static fields of its own, used to reference the default scroll processor functions, if you want to use them (potentially inside another processor):
+
+#### `ScrollProcessor.ERASE_TAG`
+
+The default scroll processor, that replaces the scrolled stack's tag completely.
+
+#### `ScrollProcessor.COPY_TAG`
+
+The scroll processor you can set via `ScrollGroup#copyTag()`, that copies the source tag to the destination.
+
+### class `mods.zenscroll.ItemMatcher`
+
+This is the functional interface used for matcher functions.
+
+#### `boolean matches(IItemStack group, IItemStack scrolled)`
+
+Run the matcher function.
+
+---
+
+This interface has a few static fields of its own, used to reference the built-in matcher functions, if you want to use them (potentially inside another matcher):
+
+#### `ItemMatcher.LENIENT`
+
+The default matcher, that checks whether the scrolled stack's tag is a superset of the one in the group.
+
+#### `ItemMatcher.STRICT`
+
+The matcher accessed via `ScrollGroup#strictMatch()`, that checks whether the scrolled stack's tag and the group's stack's tag are completely identical.
+
+#### `ItemMatcher.VERY_LENIENT`
+
+The matcher accessed via `ScrollGroup#veryLenientMatch()`, that checks only whether the scrolled stack and the group's stack have the same item definition and metadata.
