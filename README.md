@@ -94,7 +94,7 @@ Got it? Ok, let's get started.
 
 ---
 
-### Class `mods.zenscroll.ZenScroll`
+### class `mods.zenscroll.ZenScroll`
 
 This class relates to registering scroll groups to the game.
 
