@@ -234,6 +234,74 @@ This processor function just copies the tag from the previous item onto the next
 
 This function is just shorthand, it's exactly the same as manually setting the processor function to this. It's just a very common use case of processor functions.
 
+#### `ScrollGroup ScrollGroup#eraseTag`
+
+Resets the processor function to its default value of:
+
+```zenscript
+function(prev as IItemStack, next as IItemStack) {
+  return next;
+}
+```
+
+#### `ScrollGroup ScrollGroup#matcher(ItemMatcher func)`
+
+**A word of warning: This is probably the hardest to understand function in ZenScroll. Thankfully, you don't need it that often, but it's there if you do.**
+
+Sets the "item matcher" of this scroll group. When a player performs a scroll operation on one of their `IItemStack`s, ZenScroll first needs to detect which group their stack is a part of, and which stack in the group corresponds to their stack. Up to once for every item in every scroll group, ZenScroll will check if the items are the "same". If the items are the "same", the scroll operation will continue from that point. The purpose of the item matcher function is to define this concept of "sameness". It can be configured differently for each scroll group.
+
+The item matcher function is a function that takes two IItemStacks and returns a boolean. The first argument is one of the members of this scroll group, and the second argument is the stack the player is attempting to scroll. 
+
+Here is the default matcher function:
+
+```zenscript
+function(group as IItemStack, scrolled as IItemStack) {
+  return group.matches(scrolled);
+}
+```
+
+This performs the same sort of logic that crafting table recipe matching does: if the stack the player is attempting to scroll has *at least* all of the NBT tags as the stack in the scroll group, they are considered to be a match.
+
+`matcher` returns the same `ScrollGroup` you called it on, for easy chaining.
+
+Note that my JEI handler does not take into account the matcher function, so anything *really* off-the-wall you do with this function will not appear correctly in JEI.
+
+The functional interface you're implementing by writing matcher functions, btw, is `mods.zenscroll.ItemMatcher`. If you want to save and reuse these matcher functions in variables might want to import that.
+
+#### `ScrollGroup ScrollGroup#strictMatch()`
+
+Sets the matcher function to this:
+
+```zenscript
+function(group as IItemStack, scrolled as IItemStack) {
+  return group.matchesExact(scrolled)
+}
+```
+
+This matcher function only matches if the stack in the group and the player's scrolled stack have *exactly the same* NBT tag; *any* additional NBT tags on the player's scrolled stack will cause a mismatch.
+
+#### `ScrollGroup ScrollGroup#lenientMatch()`
+
+Resets the matcher function to its default value of:
+
+```zenscript
+function(group as IItemStack, scrolled as IItemStack) {
+  return group.matches(scrolled);
+}
+```
+
+#### `ScrollGroup ScrollGroup#veryLenientMatch()`
+
+Sets the matcher function to this:
+
+```
+function(group as IItemStack, scrolled as IItemStack) {
+  return group.definiton.id == scrolled.definition.id && group.metadata == scrolled.metadata;
+}
+```
+
+This matcher function effectively completely ignores the NBT tags on both the group's stack and the player's scrolled stack for purposes of matching. Note that specifying NBT on items in the scroll group still has a purpose even on a `veryLenientMatch`-ed group: scrolling *to* an item with NBT will still create an item with that NBT tag.
+
 #### `boolean ScrollGroup#contains(IItemStack stack)`
 
 Returns whether this scroll group has this stack in it.

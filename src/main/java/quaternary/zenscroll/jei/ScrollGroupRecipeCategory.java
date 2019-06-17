@@ -69,8 +69,8 @@ public class ScrollGroupRecipeCategory implements IRecipeCategory<ScrollGroupRec
 	public void setRecipe(IRecipeLayout layout, ScrollGroupRecipeWrapper wrapper, IIngredients ing) {
 		IGuiItemStackGroup stacks = layout.getItemStacks();
 		
-		List<List<ItemStack>> scrollGroup = ing.getOutputs(VanillaTypes.ITEM);
-		if(scrollGroup.isEmpty()) return;
+		List<List<ItemStack>> groupItems = ing.getOutputs(VanillaTypes.ITEM);
+		if(groupItems.isEmpty()) return;
 		
 		IFocus<?> focus = layout.getFocus();
 		ItemStack focusedStack = ItemStack.EMPTY;
@@ -78,14 +78,14 @@ public class ScrollGroupRecipeCategory implements IRecipeCategory<ScrollGroupRec
 			focusedStack = (ItemStack) focus.getValue();
 		}
 		
-		for(int i = 0; i < Math.min(36, scrollGroup.size()); i++) {
+		for(int i = 0; i < Math.min(36, groupItems.size()); i++) {
 			int x = 9 + ((i % 9) * 18);
 			int y = 9 + ((i / 9) * 18) + 4; //image is shifted down 4 pixels lol
 			
 			stacks.init(i, true, x, y);
-			stacks.set(i, scrollGroup.get(i));
+			stacks.set(i, groupItems.get(i));
 			
-			if(!focusedStack.isEmpty() && scrollGroup.get(i).get(0).isItemEqual(focusedStack)) {
+			if(!focusedStack.isEmpty() && wrapper.group.matches(groupItems.get(i).get(0), focusedStack)) {
 				stacks.setBackground(i, highlight);
 			}
 		}

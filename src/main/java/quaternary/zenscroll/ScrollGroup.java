@@ -11,11 +11,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
 import quaternary.zenscroll.util.Etc;
+import quaternary.zenscroll.util.ItemMatcher;
 import quaternary.zenscroll.util.ScrollProcessor;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenConstructor;
-import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
@@ -56,7 +56,8 @@ public class ScrollGroup implements Iterable<IItemStack> {
 	@ZenProperty
 	public List<IItemStack> items;
 	
-	public ScrollProcessor processor = (prev, next) -> next;
+	public ScrollProcessor processor = ScrollProcessor.ERASE_NBT;
+	public ItemMatcher matcher = ItemMatcher.LENIENT_TAG;
 	
 	public boolean creativeOnly = false;
 	
@@ -70,14 +71,42 @@ public class ScrollGroup implements Iterable<IItemStack> {
 	@ZenMethod("copyTag")
 	@ZenDoc("Sets the processor function to one that copies the tag from the previous itemstack.")
 	public ScrollGroup setCopyNBTProcessor() {
-		processor = (prev, next) -> {
-			if(prev.hasTag()) {
-				return next.withTag(prev.getTag(), false);
-			} else {
-				return next.withEmptyTag();
-			}
-		};
-		
+		processor = ScrollProcessor.COPY_NBT;
+		return this;
+	}
+	
+	@ZenMethod("eraseTag")
+	@ZenDoc("Sets the processor function to one that erases all NBT tags on the item except for those specified in the scroll group. This is the default behavior.")
+	public ScrollGroup setEraseNBTProcessor() {
+		processor = ScrollProcessor.ERASE_NBT;
+		return this;
+	}
+	
+	@ZenMethod("matcher")
+	@ZenDoc("When scrolling away from an item in this group, ZenScroll needs to figure out exactly which one. This matcher function is called once for every item in the input until it returns 'true'. It takes two inputs: the first is the IItemStack in the scroll group to check against, and the second is the item the user is holding when trying to scroll. By default, the matcher performs the same sort of matching done when comparing items in a crafting recipe.")
+	public ScrollGroup setItemMatcher(ItemMatcher matcher) {
+		this.matcher = matcher;
+		return this;
+	}
+	
+	@ZenMethod("strictMatch")
+	@ZenDoc("Sets the matcher function to one that only returns 'true' if the stack in the scroll group and the stack that the player is scrolling have exactly the same NBT tag.")
+	public ScrollGroup setStrictMatcher() {
+		this.matcher = ItemMatcher.STRICT_TAG;
+		return this;
+	}
+	
+	@ZenMethod("lenientMatch")
+	@ZenDoc("Sets the matcher function to one that returns 'true' if the stack that the player is scrolling has _at least_ the NBT tags the stack in the scroll group has.")
+	public ScrollGroup setLenientMatcher() {
+		this.matcher = ItemMatcher.LENIENT_TAG;
+		return this;
+	}
+	
+	@ZenMethod("veryLenientMatch")
+	@ZenDoc("Sets the matcher function to one that returns 'true' if the stack in the scroll group has the same item and metadata as the stack the player is scrolling. NBT tags are completely ignored.")
+	public ScrollGroup setIgnoreTagMatcher() {
+		this.matcher = ItemMatcher.IGNORE_TAG;
 		return this;
 	}
 	
@@ -110,10 +139,19 @@ public class ScrollGroup implements Iterable<IItemStack> {
 	@ZenDoc("Returns the index of this stack in this scroll group (where 0 is the first item in the group), or -1 if it is not present.")
 	public int indexOfIStack(IItemStack istack) {
 		for(int i = 0; i < items.size(); i++) {
-			if(items.get(i).matches(istack)) return i;
+			if(matches(items.get(i), istack)) return i;
 		}
 		
 		return -1;
+	}
+	
+	//for external calling
+	public boolean matches(ItemStack group, ItemStack provided) {
+		return matches(CraftTweakerMC.getIItemStack(group), CraftTweakerMC.getIItemStack(provided));
+	}
+	
+	public boolean matches(IItemStack igroup, IItemStack iscrolled) {
+		return matcher.matches(igroup, iscrolled);
 	}
 	
 	public ItemStack next(ItemStack stack) {
