@@ -22,6 +22,8 @@ Also check your keybindings screen. The scrolling modifier defaults to left Alt.
 
 You can configure this mod through CraftTweaker! Yeah!
 
+---
+
 ## Quick Start
 ```zenscript
 import mods.zenscroll.ZenScroll;
@@ -80,6 +82,7 @@ for item in coolGroup.items {
 ZenScroll.add(coolGroup);
 //ZenScroll.add(IIngredient...) is an alias for ZenScroll.add(ScrollGroup.of(IIngredient...)).
 ```
+
 ## Full docs
 
 Throughout this document:
@@ -88,6 +91,8 @@ Throughout this document:
 * `SomeClass#someOtherMethod` with a *pound sign* refers to an *instance* method, that you call on an *instance* of that class, like `myScrollGroup.creativeOnly();`
 
 Got it? Ok, let's get started.
+
+---
 
 ### Class `mods.zenscroll.ZenScroll`
 
@@ -150,6 +155,8 @@ Unregisters all scroll groups containing these items.
 #### `void ZenScroll.beQuietIKnowWhatImDoing()`
 
 Disables logs and info warnings.
+
+---
 
 ### class `mods.zenscroll.ScrollGroup`
 
@@ -333,7 +340,9 @@ The boolean parameter is optional and defaults to `true`.
 
 Guess what this does.
 
-### class `mods.zenscroll.ScrollProcessor`
+---
+
+### interface `mods.zenscroll.ScrollProcessor`
 
 This is the functional interface used for processor functions.
 
@@ -341,19 +350,17 @@ This is the functional interface used for processor functions.
 
 Run the scroll processor.
 
----
-
-This interface has a few static fields of its own, used to reference the default scroll processor functions, if you want to use them (potentially inside another processor):
-
 #### `ScrollProcessor.ERASE_TAG`
 
-The default scroll processor, that replaces the scrolled stack's tag completely.
+A reference to the default scroll processor, that replaces the scrolled stack's tag completely.
 
 #### `ScrollProcessor.COPY_TAG`
 
-The scroll processor you can set via `ScrollGroup#copyTag()`, that copies the source tag to the destination.
+A reference to the scroll processor you can set via `ScrollGroup#copyTag()`, that copies the source tag to the destination.
 
-### class `mods.zenscroll.ItemMatcher`
+---
+
+### interface `mods.zenscroll.ItemMatcher`
 
 This is the functional interface used for matcher functions.
 
@@ -361,18 +368,14 @@ This is the functional interface used for matcher functions.
 
 Run the matcher function.
 
----
-
-This interface has a few static fields of its own, used to reference the built-in matcher functions, if you want to use them (potentially inside another matcher):
-
 #### `ItemMatcher.LENIENT`
 
-The default matcher, that checks whether the scrolled stack's tag is a superset of the one in the group.
+A reference to the default matcher, that checks whether the scrolled stack's tag is a superset of the one in the group.
 
 #### `ItemMatcher.STRICT`
 
-The matcher accessed via `ScrollGroup#strictMatch()`, that checks whether the scrolled stack's tag and the group's stack's tag are completely identical.
+A reference to the matcher accessed via `ScrollGroup#strictMatch()`, that checks whether the scrolled stack's tag and the group's stack's tag are completely identical.
 
 #### `ItemMatcher.VERY_LENIENT`
 
-The matcher accessed via `ScrollGroup#veryLenientMatch()`, that checks only whether the scrolled stack and the group's stack have the same item definition and metadata.
+A reference to the matcher also accessed via `ScrollGroup#veryLenientMatch()`, that checks only whether the scrolled stack and the group's stack have the same item definition and metadata.
