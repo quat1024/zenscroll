@@ -10,6 +10,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import quaternary.zenscroll.ScrollGroup;
+import quaternary.zenscroll.config.ZenScrollConfig;
 import quaternary.zenscroll.proxy.ClientProxy;
 
 import java.util.List;
@@ -38,6 +39,9 @@ public class ScrollGroupRecipeWrapper implements IRecipeWrapper {
 		if(ClientProxy.SCROLL_MOD.getKeyCode() == 0) {
 			msg = "zenscroll.jei.notBound";
 			color = 0xc25151;
+		} else if(group.isCreativeOnly() && ZenScrollConfig.JEI_CREATIVE) {
+			msg = "zenscroll.jei.creativeOnly";
+			color = 0x5151c2;
 		} else {
 			msg = "zenscroll.tooltip";
 			color = 0xa7a7a7;

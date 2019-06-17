@@ -14,6 +14,7 @@ public class ZenScrollConfig {
 	
 	public static boolean REVERSED;
 	public static boolean TOOLTIP;
+	public static boolean JEI_CREATIVE;
 	
 	public static void preinit(FMLPreInitializationEvent e) {
 		config = new Configuration(e.getSuggestedConfigurationFile(), String.valueOf(CONFIG_VERSION));
@@ -32,6 +33,8 @@ public class ZenScrollConfig {
 		REVERSED = config.getBoolean("reversed", "client", false, "Should the scroll direction be reversed?");
 		
 		TOOLTIP = config.getBoolean("tooltip", "client", true, "Should a small tooltip be added on items that can be scrolled?");
+		
+		JEI_CREATIVE = config.get("client", "jeiCreative", false, "Should creative-only scroll groups appear in JEI?").setRequiresMcRestart(true).getBoolean();
 		
 		if(config.hasChanged()) config.save();
 	}

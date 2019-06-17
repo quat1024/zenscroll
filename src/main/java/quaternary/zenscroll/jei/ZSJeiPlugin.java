@@ -6,6 +6,7 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import quaternary.zenscroll.ScrollGroup;
 import quaternary.zenscroll.ZenScroll;
+import quaternary.zenscroll.config.ZenScrollConfig;
 
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public class ZSJeiPlugin implements IModPlugin {
 		
 		reg.addRecipes(
 			ZenScroll.scrollGroups.stream()
-				.filter(g -> !g.isCreativeOnly())
+				.filter(g -> ZenScrollConfig.JEI_CREATIVE || !g.isCreativeOnly())
 				.collect(Collectors.toList()),
 			ScrollGroupRecipeCategory.UID
 		);
