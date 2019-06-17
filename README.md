@@ -301,7 +301,7 @@ function(group as IItemStack, scrolled as IItemStack) {
 
 Sets the matcher function to this:
 
-```
+```zenscript
 function(group as IItemStack, scrolled as IItemStack) {
   return group.definiton.id == scrolled.definition.id && group.metadata == scrolled.metadata;
 }
